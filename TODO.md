@@ -17,15 +17,12 @@
 - [x] Search by keyword (description)
 
 
-## Version 1.2 - Reports & Statistics
-- [ ] Total spending by category
-- [ ] Monthly spending
-- [ ] Daily spending
-- [ ] Highest expense
-- [ ] Lowest expense
-- [ ] Average expense
-- [ ] Number of expenses
-- [ ] Most used category
+## Version 1.2 - Reports & Statistics ✅
+- [x] Total spending by category
+- [x] Highest expense
+- [x] Lowest expense
+- [x] Average expense
+- [x] Summary of expenses
 
 
 ## Version 1.3 - Sorting
