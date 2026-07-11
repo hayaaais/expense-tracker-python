@@ -25,12 +25,13 @@
 - [x] Summary of expenses
 
 
-## Version 1.3 - Sorting
-- [ ] Sort by amount (ascending)
-- [ ] Sort by amount (descending)
-- [ ] Sort by date
-- [ ] Sort by category
-- [ ] Sort alphabetically by description
+## Version 1.3 - Sorting ✅
+- [x] Sort by amount (ascending)
+- [x] Sort by amount (descending)
+- [x] Sort by date (ascending)
+- [x] Sort by date (descending)
+- [x] Sort by category
+- [x] Sort alphabetically by description
 
 
 ## Version 1.4 - Budgeting
