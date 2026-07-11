@@ -11,7 +11,8 @@ def show_menu():
     print("4. Show total")
     print("5. Search expenses")
     print("6. Reports")
-    print("7. Exit")
+    print("7. Sorting")
+    print("8. Exit")
 
 expenses = read_expenses()
 
@@ -230,6 +231,47 @@ def show_reports():
             continue
 
 
+def sorting():
+    def sort_expenses(expenses, field, reverse):
+            return sorted(expenses, key=lambda x: x[field], reverse=reverse)
+    
+    while True:
+        if not expenses:
+            print("No expenses found to sort.")
+            return
+        
+        print("\nSorting")
+        print("1. Amount ↑")
+        print("2. Amount ↓")
+        print("3. Date ↑")
+        print("4. Date ↓")
+        print("5. Category")
+        print("6. Description (A–Z)")
+        print("7. Back")
+        choice = input("\nChoose an option: ")
+
+        if choice == "1":
+            field, reverse = "amount", False
+        elif choice == "2":
+            field, reverse = "amount", True
+        elif choice == "3":
+            field, reverse = "date", False
+        elif choice == "4":
+            field, reverse = "date", True
+        elif choice == "5":
+            field, reverse = "category", False
+        elif choice == "6":
+            field, reverse = "description", False
+        elif choice == "7":
+            break
+        else:
+            print("\nInvalid input! Going back now - Try again\n")
+            continue
+        
+        sorted_expenses = sort_expenses(expenses, field, reverse)
+        print_expenses(sorted_expenses)
+
+
 while True:
     show_menu()
 
@@ -254,8 +296,11 @@ while True:
         show_reports()
 
     elif choice == "7":
+        sorting()
+
+    elif choice == "8":
         print("\nExiting tracker. Goodbye!")
         break
     else:
-        print("\nPlease choose option from 1 to 8\7\n")
+        print("\nPlease choose option from 1 to 8\n")
         continue
