@@ -11,7 +11,7 @@
 - [x] Auto-fill today's date
 
 
-## Version 1.1 - Search
+## Version 1.1 - Search ✅
 - [x] Search by category
 - [x] Search by date
 - [x] Search by keyword (description)
