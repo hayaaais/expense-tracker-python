@@ -19,7 +19,7 @@ def load_budget():
             return json.load(file)    
     except (FileNotFoundError, json.JSONDecodeError):
         print("File was missing or empty. Starting with a fresh empty list.")
-        return []
+        return {}
 
 def save_budget(budget):
     with open("budget.json", "w", encoding="utf-8") as file:
