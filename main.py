@@ -1,12 +1,11 @@
 import datetime
-from storage import read_expenses, save_expenses, load_budget
-from reports import show_reports
-from sorting import sorting
+from storage import load_expenses, save_expenses, load_budget
+from reports import show_reports, get_total_spent
+from sorting import sorting_menu
 from search import search_expenses
 from budget import budgeting
 from display import show_expenses, print_expenses
 
-print("Expense Tracker")
 
 def show_menu():
     print("\n--- Menu ---")
@@ -20,11 +19,9 @@ def show_menu():
     print("8. Budget")
     print("9. Exit")
 
-expenses = read_expenses()
-budget = load_budget()
 
-def add_expense():
-    print("")
+def add_expense(expenses):
+    print()
     while True:
         try:
             amount = float(input("Amount: "))
@@ -56,17 +53,18 @@ def add_expense():
             break
         except ValueError:
             print("Invalid format! Please use YYYY-MM-DD.\n")
-    expense = {
+    new_expense = {
         "amount": amount,
         "category": category,
         "description": description,
         "date": date
     }
-    expenses.append(expense)
+    expenses.append(new_expense)
     save_expenses(expenses)
     print("\nExpense added successfully!\n")
 
-def delete_expense():
+
+def delete_expense(expenses):
     print("\n--- Delete Expense ---")
     if not expenses:
         print("No expenses to delete.\n")
@@ -85,43 +83,54 @@ def delete_expense():
             except ValueError:
                 print("Please enter a valid number.\n")
 
-def show_total():
-    total = sum(exp['amount'] for exp in expenses)
+
+def show_total(expenses):
+    total = get_total_spent(expenses)
     print(f"\nYour total is {total:.2f}₸\n")
 
 
-while True:
-    show_menu()
+def main():
+    print("Expense Tracker")
 
-    choice = input("\nChoose an option: ")
+    expenses = load_expenses()
+    budget = load_budget()
 
-    if choice == "1":
-        add_expense()
+    while True:
+        show_menu()
 
-    elif choice == "2":
-        show_expenses()
-    
-    elif choice == "3":
-        delete_expense()
+        choice = input("\nChoose an option: ")
 
-    elif choice == "4":
-        show_total()
+        if choice == "1":
+            add_expense(expenses)
 
-    elif choice == "5":
-        search_expenses(expenses)
+        elif choice == "2":
+            show_expenses(expenses)
+        
+        elif choice == "3":
+            delete_expense(expenses)
 
-    elif choice == "6":
-        show_reports(expenses)
+        elif choice == "4":
+            show_total(expenses)
 
-    elif choice == "7":
-        sorting(expenses)
+        elif choice == "5":
+            search_expenses(expenses)
 
-    elif choice == "8":
-        budgeting(expenses, budget)
+        elif choice == "6":
+            show_reports(expenses)
 
-    elif choice == "9":
-        print("\nExiting tracker. Goodbye!")
-        break
-    else:
-        print("\nPlease choose option from 1 to 9\n")
-        continue
+        elif choice == "7":
+            sorting_menu(expenses)
+
+        elif choice == "8":
+            budgeting(expenses, budget)
+
+        elif choice == "9":
+            print("\nExiting tracker. Goodbye!")
+            break
+        else:
+            print("\nPlease choose option from 1 to 9\n")
+            continue
+
+
+if __name__ == "__main__":
+    main()
