@@ -1,7 +1,7 @@
 def print_expenses(expenses):
     for index, exp in enumerate(expenses, 1):
-            print(f"{index}. {exp['amount']}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
-    print("")
+        print(f"{index}. {exp['amount']:.2f}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
+    print()
 
 
 def show_expenses(expenses):

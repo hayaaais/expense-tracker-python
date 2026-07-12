@@ -1,11 +1,11 @@
 import json
 
-def read_expenses():
+def load_expenses():
     try:
         with open("expenses.json", "r", encoding="utf-8") as file:
             return json.load(file)    
     except (FileNotFoundError, json.JSONDecodeError):
-        print("File was missing or empty. Starting with a fresh empty list.")
+        print("Storage file not found or invalid. Starting with empty data.")
         return []
 
 def save_expenses(expenses):
@@ -18,7 +18,7 @@ def load_budget():
         with open("budget.json", "r", encoding="utf-8") as file:
             return json.load(file)    
     except (FileNotFoundError, json.JSONDecodeError):
-        print("File was missing or empty. Starting with a fresh empty list.")
+        print("Storage file not found or invalid. Starting with empty data.")
         return {}
 
 def save_budget(budget):

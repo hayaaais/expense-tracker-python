@@ -1,6 +1,6 @@
 import datetime
-from storage import read_expenses, save_expenses, load_budget, save_budget
-from reports import show_reports, get_total_spent, get_category_totals
+from storage import read_expenses, save_expenses, load_budget
+from reports import show_reports
 from sorting import sorting
 from search import search_expenses
 from budget import budgeting
