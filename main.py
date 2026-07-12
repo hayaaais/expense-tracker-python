@@ -298,18 +298,19 @@ def budgeting():
                     break
                 except ValueError:
                     print("Invalid input! Please enter a valid number.\n")
+            global budget
             budget = {"monthly_budget": budget_data}
             save_budget(budget)
             print("\nBudget set successfully!\n")
         elif choice == "2":
-            print(f"\nCurrent monthly budget: {budget_data.get('monthly_budget', 0):.2f}₸\n")
+            print(f"\nCurrent monthly budget: {budget.get('monthly_budget', 0):.2f}₸\n")
         elif choice == "3":
             total_spent = sum(exp['amount'] for exp in expenses)
-            remaining_budget = budget_data.get('monthly_budget', 0) - total_spent
+            remaining_budget = budget.get('monthly_budget', 0) - total_spent
             print(f"\nRemaining budget: {remaining_budget:.2f}₸\n")
         elif choice == "4":
             total_spent = sum(exp['amount'] for exp in expenses)
-            monthly_budget = budget_data.get('monthly_budget', 0)
+            monthly_budget = budget.get('monthly_budget', 0)
             if monthly_budget > 0:
                 percentage_used = (total_spent / monthly_budget) * 100
                 print(f"\nPercentage of budget used: {percentage_used:.2f}%\n")
@@ -317,7 +318,7 @@ def budgeting():
                 print("\nNo budget set. Please set a monthly budget first.\n")
         elif choice == "5":
             total_spent = sum(exp['amount'] for exp in expenses)
-            monthly_budget = budget_data.get('monthly_budget', 0)
+            monthly_budget = budget.get('monthly_budget', 0)
             if monthly_budget > 0:
                 if total_spent > monthly_budget:
                     exceeded_amount = total_spent - monthly_budget
