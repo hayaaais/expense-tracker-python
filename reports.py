@@ -7,16 +7,16 @@ def get_category_totals(expenses):
 
 
 def print_extreme_expenses(expenses, mode="highest"):
-        is_reverse = (mode == "highest")
-        sorted_expenses = sorted(expenses, key=lambda x: x["amount"], reverse=is_reverse)
-        target_amount = sorted_expenses[0]["amount"]
-        print(f"\n{mode.title()} Expense(s)")
-        for exp in sorted_expenses:
-            if exp["amount"] == target_amount:
-                print(f"{exp['amount']:.2f}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
-            else:
-                break
-        print()
+    is_reverse = (mode == "highest")
+    sorted_expenses = sorted(expenses, key=lambda x: x["amount"], reverse=is_reverse)
+    target_amount = sorted_expenses[0]["amount"]
+    print(f"\n{mode.title()} Expense(s)")
+    for exp in sorted_expenses:
+        if exp["amount"] == target_amount:
+            print(f"{exp['amount']:.2f}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
+        else:
+            break
+    print()
 
 
 def get_total_spent(expenses):

@@ -1,5 +1,6 @@
 import json
 
+
 def load_expenses():
     try:
         with open("expenses.json", "r", encoding="utf-8") as file:

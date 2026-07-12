@@ -1,10 +1,11 @@
-from main import print_expenses
+from display import print_expenses
+
 
 def sort_expenses(expenses, field, reverse):
-            return sorted(expenses, key=lambda x: x[field], reverse=reverse)
+    return sorted(expenses, key=lambda x: x[field], reverse=reverse)
 
-def sorting(expenses):
-    
+
+def sorting_menu(expenses):
     while True:
         if not expenses:
             print("No expenses found to sort.")
