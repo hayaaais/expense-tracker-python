@@ -215,7 +215,7 @@ def show_reports():
             average = total_spent / len(expenses)
             print(f"Your average expense amount is: {average:.2f}₸")
         elif choice == "5":
-            total_spent = sum(exp['amount'] for exp in expenses)
+            total_spent = get_total_spent(expenses)
             average = total_spent / len(expenses)
             highest_expense = max(exp["amount"] for exp in expenses)
             lowest_expense = min(exp["amount"] for exp in expenses)
@@ -273,6 +273,18 @@ def sorting():
         print_expenses(sorted_expenses)
 
 
+def get_total_spent(expenses):
+    return sum(exp["amount"] for exp in expenses)
+
+
+def get_monthly_expenses(month):
+    monthly_expenses = []
+    for exp in expenses:
+        if exp["date"][:7] == month:
+            monthly_expenses.append(exp)
+    return get_total_spent(monthly_expenses)
+
+
 def budgeting():
     while True:
         if not expenses:
@@ -305,11 +317,13 @@ def budgeting():
         elif choice == "2":
             print(f"\nCurrent monthly budget: {budget.get('monthly_budget', 0):.2f}₸\n")
         elif choice == "3":
-            total_spent = sum(exp['amount'] for exp in expenses)
+            current_month = datetime.date.today().strftime("%Y-%m")
+            total_spent = get_monthly_expenses(current_month)
             remaining_budget = budget.get('monthly_budget', 0) - total_spent
             print(f"\nRemaining budget: {remaining_budget:.2f}₸\n")
         elif choice == "4":
-            total_spent = sum(exp['amount'] for exp in expenses)
+            current_month = datetime.date.today().strftime("%Y-%m")
+            total_spent = get_monthly_expenses(current_month)
             monthly_budget = budget.get('monthly_budget', 0)
             if monthly_budget > 0:
                 percentage_used = (total_spent / monthly_budget) * 100
@@ -317,7 +331,8 @@ def budgeting():
             else:
                 print("\nNo budget set. Please set a monthly budget first.\n")
         elif choice == "5":
-            total_spent = sum(exp['amount'] for exp in expenses)
+            current_month = datetime.date.today().strftime("%Y-%m")
+            total_spent = get_monthly_expenses(current_month)
             monthly_budget = budget.get('monthly_budget', 0)
             if monthly_budget > 0:
                 if total_spent > monthly_budget:
