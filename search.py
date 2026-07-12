@@ -1,13 +1,10 @@
 import datetime
-from main import print_expenses
+from display import print_expenses
 
-def find_expense(exp, field, value, partial_match, srch_expenses):
-            if partial_match:
-                if value in exp[field].lower():
-                    srch_expenses.append(exp)
-            else:
-                if exp[field] == value:
-                    srch_expenses.append(exp)
+
+def find_expense(exp, field, value, partial_match):
+    return (partial_match and value in exp[field].lower()) or (not partial_match and exp[field] == value)
+
 
 def search_expenses(expenses):
     while True:
@@ -21,7 +18,7 @@ def search_expenses(expenses):
         print("3. Description")
         print("4. Back")
         choice = input("\nChoose an option: ")
-        srch_expenses = []
+        matching_expenses = []
 
         if choice == "1":
             field, partial_match = "category", False
@@ -50,11 +47,12 @@ def search_expenses(expenses):
         if not value:
             print("Search cannot be empty.")
             return
-        else:
-            for exp in expenses:
-                find_expense(exp, field, value, partial_match, srch_expenses)
+        
+        for exp in expenses:
+            if find_expense(exp, field, value, partial_match):
+                matching_expenses.append(exp)
 
-        if not srch_expenses:
+        if not matching_expenses:
             print("\nNo matching expenses found.\n")
         else:
-            print_expenses(srch_expenses)
+            print_expenses(matching_expenses)

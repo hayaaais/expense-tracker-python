@@ -2,6 +2,7 @@ import datetime
 from reports import get_total_spent
 from storage import save_budget
 
+
 def get_monthly_expenses(month, expenses):
     monthly_expenses = []
     for exp in expenses:
@@ -25,6 +26,10 @@ def budgeting(expenses, budget):
         print("6. Back")
         choice = input("\nChoose an option: ")
 
+        current_month = datetime.date.today().strftime("%Y-%m")
+        total_spent = get_monthly_expenses(current_month, expenses)
+        monthly_budget = budget.get("monthly_budget", 0)
+
         if choice == "1":
             while True:
                 try:
@@ -38,26 +43,22 @@ def budgeting(expenses, budget):
             budget = {"monthly_budget": budget_data}
             save_budget(budget)
             print("\nBudget set successfully!\n")
+
         elif choice == "2":
             print(f"\nCurrent monthly budget: {budget.get('monthly_budget', 0):.2f}₸\n")
+
         elif choice == "3":
-            current_month = datetime.date.today().strftime("%Y-%m")
-            total_spent = get_monthly_expenses(current_month)
             remaining_budget = budget.get('monthly_budget', 0) - total_spent
             print(f"\nRemaining budget: {remaining_budget:.2f}₸\n")
+
         elif choice == "4":
-            current_month = datetime.date.today().strftime("%Y-%m")
-            total_spent = get_monthly_expenses(current_month)
-            monthly_budget = budget.get('monthly_budget', 0)
-            if monthly_budget > 0:
+            if not monthly_budget:
                 percentage_used = (total_spent / monthly_budget) * 100
                 print(f"\nPercentage of budget used: {percentage_used:.2f}%\n")
             else:
                 print("\nNo budget set. Please set a monthly budget first.\n")
+
         elif choice == "5":
-            current_month = datetime.date.today().strftime("%Y-%m")
-            total_spent = get_monthly_expenses(current_month)
-            monthly_budget = budget.get('monthly_budget', 0)
             if monthly_budget > 0:
                 if total_spent > monthly_budget:
                     exceeded_amount = total_spent - monthly_budget
@@ -66,9 +67,11 @@ def budgeting(expenses, budget):
                     print("\nYou are within your budget.\n")
             else:
                 print("\nNo budget set. Please set a monthly budget first.\n")
+
         elif choice == "6":
             print()
             break
+        
         else:
             print("\nInvalid input! Going back now - Try again\n")
             continue
