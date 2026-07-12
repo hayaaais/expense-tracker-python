@@ -41,29 +41,36 @@
 - [ ] Budget percentage used
 
 
-## Version 1.5 - Visualization
+## Version 1.5 - Charts (matplotlib)
 - [ ] Pie chart by category
 - [ ] Bar chart by month
 - [ ] Line chart of spending over time
 
 
-## Version 2.0 - GUI
-- [ ] Desktop interface
-- [ ] Buttons
-- [ ] Forms
-- [ ] Table of expenses
-- [ ] Calendar picker
+Version 2.0
+Refactor project architecture
 
+--------------------
 
-## Version 3.0 - SQLite
-- [ ] Replace JSON with SQLite
-- [ ] Learn SQL
-- [ ] CRUD with database
+Version 3.0
+FastAPI
 
+--------------------
 
-## Version 4.0 - Web Application
-- [ ] FastAPI backend
-- [ ] React frontend
-- [ ] User authentication
-- [ ] Multiple users
-- [ ] Deployment
+Version 4.0
+Streamlit dashboard
+
+--------------------
+
+Version 5.0
+Gemini AI insights
+
+--------------------
+
+Version 6.0
+SQLite
+
+--------------------
+
+Version 7.0
+Deploy on Render
