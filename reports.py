@@ -1,7 +1,4 @@
 import json
-from storage import read_expenses
-
-expenses = read_expenses()
 
 def get_category_totals(expenses):
     totals_dict = {}
@@ -17,7 +14,7 @@ def get_category_totals(expenses):
     return totals_dict
 
 
-def show_reports():
+def show_reports(expenses):
     def print_extreme_expenses(expenses, mode="highest"):
         is_reverse = True if mode == "highest" else False
         sorted_expenses = sorted(expenses, key=lambda x: x["amount"], reverse=is_reverse)
@@ -25,9 +22,10 @@ def show_reports():
         print(f"\n{mode.title()} Expense(s)")
         for exp in sorted_expenses:
             if exp["amount"] == target_amount:
-                print(f"{exp['amount']}₸\n{exp['category']}\n{exp['description']}\n{exp['date']}\n---")
+                print(f"{exp['amount']}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
             else:
                 break
+        print()
 
     while True:
         if not expenses:
@@ -54,22 +52,24 @@ def show_reports():
         elif choice == "3":
             print_extreme_expenses(expenses, mode="lowest")
         elif choice == "4":
-            print("\nAverage expense\n")
+            print("Average expense\n")
             total_spent = sum(exp['amount'] for exp in expenses)
             average = total_spent / len(expenses)
             print(f"Your average expense amount is: {average:.2f}₸")
+            print()
         elif choice == "5":
             total_spent = get_total_spent(expenses)
             average = total_spent / len(expenses)
             highest_expense = max(exp["amount"] for exp in expenses)
             lowest_expense = min(exp["amount"] for exp in expenses)
             print("\nSummary\n")
-            print(f"Total expenses: {len(expenses)}\n")
-            print(f"Total spent: {total_spent}₸\n")
-            print(f"Average expense: {average}₸\n")
-            print(f"Highest expense: {highest_expense}₸\n")
+            print(f"Total expenses: {len(expenses)}")
+            print(f"Total spent: {total_spent}₸")
+            print(f"Average expense: {average}₸")
+            print(f"Highest expense: {highest_expense}₸")
             print(f"Lowest expense: {lowest_expense}₸\n")
         elif choice == "6":
+            print()
             break
         else:
             print("\nInvalid input! Going back now - Try again\n")

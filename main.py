@@ -298,7 +298,7 @@ while True:
         search_expenses()
 
     elif choice == "6":
-        show_reports()
+        show_reports(expenses)
 
     elif choice == "7":
         sorting()
