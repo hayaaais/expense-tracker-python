@@ -4,6 +4,7 @@ from reports import show_reports, get_total_spent, get_category_totals
 from sorting import sorting
 from search import search_expenses
 from budget import budgeting
+from display import show_expenses, print_expenses
 
 print("Expense Tracker")
 
@@ -21,7 +22,6 @@ def show_menu():
 
 expenses = read_expenses()
 budget = load_budget()
-
 
 def add_expense():
     print("")
@@ -66,21 +66,6 @@ def add_expense():
     save_expenses(expenses)
     print("\nExpense added successfully!\n")
 
-
-def print_expenses(expenses):
-    for index, exp in enumerate(expenses, 1):
-            print(f"{index}. {exp['amount']}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
-    print("")
-
-
-def show_expenses():
-    print("\n--- All Expenses ---")
-    if not expenses:
-        print("No expenses found.")
-    else:
-        print_expenses(expenses)
-
-
 def delete_expense():
     print("\n--- Delete Expense ---")
     if not expenses:
@@ -99,7 +84,6 @@ def delete_expense():
                     print("Invalid number. Choose an item from the list.\n")
             except ValueError:
                 print("Please enter a valid number.\n")
-
 
 def show_total():
     total = sum(exp['amount'] for exp in expenses)

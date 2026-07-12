@@ -1,6 +1,4 @@
-import json
 import datetime
-from main import print_expenses
 from reports import get_total_spent
 from storage import save_budget
 

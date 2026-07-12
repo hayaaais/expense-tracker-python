@@ -1,5 +1,3 @@
-import json
-
 def get_category_totals(expenses):
     totals_dict = {}
     available_categories = set(exp["category"] for exp in expenses)

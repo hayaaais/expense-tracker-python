@@ -1,4 +1,3 @@
-import json
 from main import print_expenses
 
 def sort_expenses(expenses, field, reverse):

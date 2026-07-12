@@ -1,4 +1,3 @@
-import json
 import datetime
 from main import print_expenses
 
