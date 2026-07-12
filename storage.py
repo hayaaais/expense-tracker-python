@@ -11,3 +11,16 @@ def read_expenses():
 def save_expenses(expenses):
     with open("expenses.json", "w", encoding="utf-8") as file:
         json.dump(expenses, file, indent=4, ensure_ascii=False)
+
+
+def load_budget():
+    try:
+        with open("budget.json", "r", encoding="utf-8") as file:
+            return json.load(file)    
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("File was missing or empty. Starting with a fresh empty list.")
+        return []
+
+def save_budget(budget):
+    with open("budget.json", "w", encoding="utf-8") as file:
+        json.dump(budget, file, indent=4, ensure_ascii=False)
