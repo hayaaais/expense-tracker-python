@@ -2,16 +2,47 @@ import datetime
 from display import print_expenses
 
 
-def find_expense(exp, field, value, partial_match):
-    return (partial_match and value in exp[field].lower()) or (not partial_match and exp[field] == value)
+def filter_by_category(expenses, category):
+    return [
+        exp
+        for exp in expenses
+        if exp["category"] == category
+    ]
+
+
+def filter_by_date(expenses, date):
+    return [
+        exp
+        for exp in expenses
+        if exp["date"] == date
+    ]
+
+
+def filter_by_description(expenses, description):
+    return [
+        exp
+        for exp in expenses
+        if description in exp["description"].lower()
+    ]
+
+
+def parse_date(date):
+    date = date.strip()
+    if not date:
+        return datetime.date.today().strftime("%Y-%m-%d"), None
+    try:
+        datetime.datetime.strptime(date, "%Y-%m-%d")
+        return date, None
+    except ValueError:
+        return None, "Invalid format! Please use YYYY-MM-DD.\n"
 
 
 def search_expenses(expenses):
-    while True:
-        if not expenses:
+    if not expenses:
             print("\nNo expenses to search.\n")
             return
-        
+    
+    while True:
         print("\nSearch by:")
         print("1. Category")
         print("2. Date")
@@ -21,37 +52,31 @@ def search_expenses(expenses):
         matching_expenses = []
 
         if choice == "1":
-            field, partial_match = "category", False
-            value = input("\nEnter category: ").title()
+            category = input("\nEnter category: ").title()
+            if not category:
+                print("Search cannot be empty.")
+                continue
+            matching_expenses = filter_by_category(expenses, category)
         elif choice == "2":
-            field, partial_match = "date", False
-            value = input("\nEnter date (YYYY-MM-DD, leave blank for today): ").strip()
-            if not value:
-                value = datetime.date.today().strftime("%Y-%m-%d")
-            else:
-                try:
-                    datetime.datetime.strptime(value, "%Y-%m-%d")
-                except ValueError:
-                    print("Invalid format! Please use YYYY-MM-DD.\n")
-                    return
+            date = input("\nEnter date (YYYY-MM-DD, leave blank for today): ")
+            date, error = parse_date(date)
+            if error:
+                print(error)
+                continue 
+            matching_expenses = filter_by_date(expenses, date)
         elif choice == "3":
-            field, partial_match = "description", True
-            value = input("\nEnter keyword for description: ").lower()
+            description = input("\nEnter keyword for description: ").lower()
+            if not description:
+                print("Search cannot be empty.")
+                continue
+            matching_expenses = filter_by_description(expenses, description)
         elif choice == "4":
             print()
             break
         else:
             print("\nInvalid input! Going back now - Try again\n")
             continue
-
-        if not value:
-            print("Search cannot be empty.")
-            return
         
-        for exp in expenses:
-            if find_expense(exp, field, value, partial_match):
-                matching_expenses.append(exp)
-
         if not matching_expenses:
             print("\nNo matching expenses found.\n")
         else:

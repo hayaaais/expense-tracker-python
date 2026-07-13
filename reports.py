@@ -6,18 +6,17 @@ def get_category_totals(expenses):
     return dict(sorted(totals.items()))
 
 
-def print_extreme_expenses(expenses, mode="highest"):
-    is_reverse = (mode == "highest")
-    sorted_expenses = sorted(expenses, key=lambda x: x["amount"], reverse=is_reverse)
+def get_extreme_expenses(expenses, mode="highest"):
+    reverse = (mode == "highest")
+    sorted_expenses = sorted(expenses, key=lambda x: x["amount"], reverse=reverse)
     target_amount = sorted_expenses[0]["amount"]
-    print(f"\n{mode.title()} Expense(s)")
+    extreme_expenses = []
     for exp in sorted_expenses:
         if exp["amount"] == target_amount:
-            print(f"{exp['amount']:.2f}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
+            extreme_expenses.append(exp)
         else:
             break
-    print()
-
+    return extreme_expenses
 
 def get_total_spent(expenses):
     return sum(exp["amount"] for exp in expenses)
@@ -29,26 +28,26 @@ def get_average_expense(expenses):
     return total / count if count > 0 else 0
 
 
-def get_highest_expenses(expenses):
+def get_highest_amount(expenses):
     return max(exp["amount"] for exp in expenses)
 
 
-def get_lowest_expenses(expenses):
+def get_lowest_amount(expenses):
     return min(exp["amount"] for exp in expenses)
 
 
 def get_summary(expenses):
-    summary = {}
     total_spent = get_total_spent(expenses)
     average = get_average_expense(expenses)
-    highest_expense = get_highest_expenses(expenses)
-    lowest_expense = get_lowest_expenses(expenses)
-    summary["total_expenses"] = len(expenses)
-    summary["total_spent"] = total_spent
-    summary["average_expense"] = average
-    summary["highest_expense"] = highest_expense
-    summary["lowest_expense"] = lowest_expense
-    return summary
+    highest_expense = get_highest_amount(expenses)
+    lowest_expense = get_lowest_amount(expenses)
+    return {
+        "total_expenses": len(expenses),
+        "total_spent": total_spent,
+        "average_expense": average,
+        "highest_expense": highest_expense,
+        "lowest_expense": lowest_expense,
+    }
 
 
 def show_reports(expenses):
@@ -73,9 +72,15 @@ def show_reports(expenses):
                 print(f"{ctg.ljust(15, '.')} {total:.2f}₸")
             print()
         elif choice == "2":
-            print_extreme_expenses(expenses, mode="highest")
+            highest_expenses = get_extreme_expenses(expenses, mode="highest")
+            print("\nHighest expense\n")
+            for exp in highest_expenses:
+                print(f"{exp['amount']:.2f}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
         elif choice == "3":
-            print_extreme_expenses(expenses, mode="lowest")
+            lowest_expenses = get_extreme_expenses(expenses, mode="lowest")
+            print("\nLowest expense\n")
+            for exp in lowest_expenses:
+                print(f"{exp['amount']:.2f}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
         elif choice == "4":
             average = get_average_expense(expenses)
             print("Average expense\n")
