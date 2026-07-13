@@ -1,4 +1,5 @@
 import datetime
+from database import initialize_database
 from storage import load_expenses, save_expenses, load_budget
 from reports import show_reports, get_total_spent
 from sorting import sorting_menu
@@ -92,6 +93,7 @@ def show_total(expenses):
 def main():
     print("Expense Tracker")
 
+    initialize_database()
     expenses = load_expenses()
     budget = load_budget()
 
