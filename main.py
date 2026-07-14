@@ -1,6 +1,11 @@
 import datetime
-from database import initialize_database
-from storage import load_expenses, save_expenses, load_budget
+from database import (
+    initialize_database,
+    load_expenses,
+    insert_expense,
+    delete_expense,
+    load_budget,
+)
 from reports import show_reports, get_total_spent
 from sorting import sorting_menu
 from search import search_expenses
@@ -21,7 +26,7 @@ def show_menu():
     print("9. Exit")
 
 
-def add_expense(expenses):
+def add_expense():
     print()
     while True:
         try:
@@ -60,12 +65,11 @@ def add_expense(expenses):
         "description": description,
         "date": date
     }
-    expenses.append(new_expense)
-    save_expenses(expenses)
+    insert_expense(new_expense)
     print("\nExpense added successfully!\n")
 
 
-def delete_expense(expenses):
+def delete_expense_by_id(expenses):
     print("\n--- Delete Expense ---")
     if not expenses:
         print("No expenses to delete.\n")
@@ -75,8 +79,8 @@ def delete_expense(expenses):
             try:
                 num = int(input("Enter the number to delete: ")) - 1
                 if 0 <= num < len(expenses):
-                    del expenses[num]
-                    save_expenses(expenses)
+                    expense_id = expenses[num]["id"]
+                    delete_expense(expense_id)
                     print("\nExpense was deleted successfully!\n")
                     break
                 else:
@@ -103,13 +107,15 @@ def main():
         choice = input("\nChoose an option: ")
 
         if choice == "1":
-            add_expense(expenses)
+            add_expense()
+            expenses = load_expenses()
 
         elif choice == "2":
             show_expenses(expenses)
         
         elif choice == "3":
-            delete_expense(expenses)
+            delete_expense_by_id(expenses)
+            expenses = load_expenses()
 
         elif choice == "4":
             show_total(expenses)
@@ -125,6 +131,7 @@ def main():
 
         elif choice == "8":
             budgeting(expenses, budget)
+            budget = load_budget()
 
         elif choice == "9":
             print("\nExiting tracker. Goodbye!")

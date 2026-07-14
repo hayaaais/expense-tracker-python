@@ -1,6 +1,6 @@
 import datetime
 from reports import get_total_spent
-from storage import save_budget
+from database import save_budget
 
 
 def get_monthly_expenses(month, expenses):
@@ -33,13 +33,14 @@ def calculate_budget_excess(monthly_budget, expenses):
 
 
 def _prompt_budget_input():
+    current_month = datetime.date.today().strftime("%Y-%m")
     while True:
         try:
             budget_data = float(input("\nBudget: "))
             if budget_data < 0:
                 print("Budget cannot be negative. Please try again.\n")
                 continue
-            return budget_data
+            return current_month, budget_data
         except ValueError:
             print("Invalid input! Please enter a valid number.\n")
 
@@ -62,9 +63,8 @@ def budgeting(expenses, budget):
         choice = input("\nChoose an option: ")
 
         if choice == "1":
-            budget_data = _prompt_budget_input()
-            budget["monthly_budget"] = budget_data
-            save_budget(budget)
+            current_month, budget_data = _prompt_budget_input()
+            save_budget(current_month, budget_data)
             print("\nBudget set successfully!\n")
             
         elif choice == "2":
