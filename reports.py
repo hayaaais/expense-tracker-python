@@ -1,3 +1,6 @@
+from display import print_expenses
+
+
 def get_category_totals(expenses):
     totals = {}
     for exp in expenses:
@@ -7,6 +10,8 @@ def get_category_totals(expenses):
 
 
 def get_extreme_expenses(expenses, mode="highest"):
+    if not expenses:
+        return []
     reverse = (mode == "highest")
     sorted_expenses = sorted(expenses, key=lambda x: x["amount"], reverse=reverse)
     target_amount = sorted_expenses[0]["amount"]
@@ -74,13 +79,11 @@ def show_reports(expenses):
         elif choice == "2":
             highest_expenses = get_extreme_expenses(expenses, mode="highest")
             print("\nHighest expense\n")
-            for exp in highest_expenses:
-                print(f"{exp['amount']:.2f}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
+            print_expenses(highest_expenses)
         elif choice == "3":
             lowest_expenses = get_extreme_expenses(expenses, mode="lowest")
             print("\nLowest expense\n")
-            for exp in lowest_expenses:
-                print(f"{exp['amount']:.2f}₸ | {exp['category']} - {exp['description']} | Date: {exp['date']}")
+            print_expenses(lowest_expenses)
         elif choice == "4":
             average = get_average_expense(expenses)
             print("Average expense\n")

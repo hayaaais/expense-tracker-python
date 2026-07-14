@@ -20,9 +20,9 @@ def calculate_remaining_budget(budget, expenses):
 
 def calculate_budget_percentage(monthly_budget, expenses):
     total_spent = get_current_month_total(expenses)
-    if monthly_budget > 0:
-        return (total_spent / monthly_budget) * 100
-    return None
+    if monthly_budget <= 0:
+        return 0.0
+    return (total_spent / monthly_budget) * 100
     
 
 def calculate_budget_excess(monthly_budget, expenses):
