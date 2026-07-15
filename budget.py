@@ -15,7 +15,7 @@ def get_current_month_total(expenses):
 
 def calculate_remaining_budget(budget, expenses):
     total_spent = get_current_month_total(expenses)
-    return budget.get('monthly_budget', 0) - total_spent
+    return budget.get("monthly_budget", 0) - total_spent
 
 
 def calculate_budget_percentage(monthly_budget, expenses):
@@ -23,7 +23,7 @@ def calculate_budget_percentage(monthly_budget, expenses):
     if monthly_budget <= 0:
         return 0.0
     return (total_spent / monthly_budget) * 100
-    
+
 
 def calculate_budget_excess(monthly_budget, expenses):
     total_spent = get_current_month_total(expenses)
@@ -49,7 +49,7 @@ def budgeting(expenses, budget):
     if not expenses:
         print("No expenses found for budgeting.")
         return
-    
+
     while True:
         monthly_budget = budget.get("monthly_budget", 0)
 
@@ -66,7 +66,7 @@ def budgeting(expenses, budget):
             current_month, budget_data = _prompt_budget_input()
             save_budget(current_month, budget_data)
             print("\nBudget set successfully!\n")
-            
+
         elif choice == "2":
             print(f"\nCurrent monthly budget: {monthly_budget:.2f}₸\n")
 
@@ -94,7 +94,7 @@ def budgeting(expenses, budget):
         elif choice == "6":
             print()
             break
-        
+
         else:
             print("\nInvalid input! Going back now - Try again\n")
             continue

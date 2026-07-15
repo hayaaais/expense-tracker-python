@@ -12,7 +12,7 @@ def get_category_totals(expenses):
 def get_extreme_expenses(expenses, mode="highest"):
     if not expenses:
         return []
-    reverse = (mode == "highest")
+    reverse = mode == "highest"
     sorted_expenses = sorted(expenses, key=lambda x: x["amount"], reverse=reverse)
     target_amount = sorted_expenses[0]["amount"]
     extreme_expenses = []
@@ -22,6 +22,7 @@ def get_extreme_expenses(expenses, mode="highest"):
         else:
             break
     return extreme_expenses
+
 
 def get_total_spent(expenses):
     return sum(exp["amount"] for exp in expenses)
@@ -57,9 +58,9 @@ def get_summary(expenses):
 
 def show_reports(expenses):
     if not expenses:
-            print("No expenses recorded yet.")
-            return
-    
+        print("No expenses recorded yet.")
+        return
+
     while True:
         print("\nReports")
         print("1. Spending by category")

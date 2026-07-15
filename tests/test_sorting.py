@@ -1,9 +1,13 @@
 from sorting import sort_expenses
 
-
 SAMPLE = [
     {"amount": 30.0, "category": "Food", "description": "Snacks", "date": "2026-07-05"},
-    {"amount": 10.0, "category": "Transport", "description": "Bus", "date": "2026-07-01"},
+    {
+        "amount": 10.0,
+        "category": "Transport",
+        "description": "Bus",
+        "date": "2026-07-01",
+    },
     {"amount": 50.0, "category": "Bills", "description": "Wifi", "date": "2026-07-10"},
 ]
 

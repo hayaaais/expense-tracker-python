@@ -7,9 +7,9 @@ def sort_expenses(expenses, field, reverse):
 
 def sorting_menu(expenses):
     if not expenses:
-            print("No expenses found to sort.")
-            return
-    
+        print("No expenses found to sort.")
+        return
+
     while True:
         print("\nSorting")
         print("1. Amount ↑")
@@ -39,6 +39,6 @@ def sorting_menu(expenses):
         else:
             print("\nInvalid input! Going back now - Try again\n")
             continue
-        
+
         sorted_expenses = sort_expenses(expenses, field, reverse)
         print_expenses(sorted_expenses)

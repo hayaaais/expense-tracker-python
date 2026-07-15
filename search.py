@@ -3,27 +3,15 @@ from display import print_expenses
 
 
 def filter_by_category(expenses, category):
-    return [
-        exp
-        for exp in expenses
-        if exp["category"] == category
-    ]
+    return [exp for exp in expenses if exp["category"] == category]
 
 
 def filter_by_date(expenses, date):
-    return [
-        exp
-        for exp in expenses
-        if exp["date"] == date
-    ]
+    return [exp for exp in expenses if exp["date"] == date]
 
 
 def filter_by_description(expenses, description):
-    return [
-        exp
-        for exp in expenses
-        if description in exp["description"].lower()
-    ]
+    return [exp for exp in expenses if description in exp["description"].lower()]
 
 
 def parse_date(date):
@@ -39,9 +27,9 @@ def parse_date(date):
 
 def search_expenses(expenses):
     if not expenses:
-            print("\nNo expenses to search.\n")
-            return
-    
+        print("\nNo expenses to search.\n")
+        return
+
     while True:
         print("\nSearch by:")
         print("1. Category")
@@ -62,7 +50,7 @@ def search_expenses(expenses):
             date, error = parse_date(date)
             if error:
                 print(error)
-                continue 
+                continue
             matching_expenses = filter_by_date(expenses, date)
         elif choice == "3":
             description = input("\nEnter keyword for description: ").lower()
@@ -76,7 +64,7 @@ def search_expenses(expenses):
         else:
             print("\nInvalid input! Going back now - Try again\n")
             continue
-        
+
         if not matching_expenses:
             print("\nNo matching expenses found.\n")
         else:

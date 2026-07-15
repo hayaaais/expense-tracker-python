@@ -11,13 +11,29 @@ from search import (
 @pytest.fixture
 def sample_expenses():
     return [
-        {"amount": 10.0, "category": "Food", "description": "Grocery run", "date": "2026-07-01"},
-        {"amount": 20.0, "category": "Transport", "description": "Taxi ride", "date": "2026-07-02"},
-        {"amount": 30.0, "category": "Food", "description": "Restaurant dinner", "date": "2026-07-02"},
+        {
+            "amount": 10.0,
+            "category": "Food",
+            "description": "Grocery run",
+            "date": "2026-07-01",
+        },
+        {
+            "amount": 20.0,
+            "category": "Transport",
+            "description": "Taxi ride",
+            "date": "2026-07-02",
+        },
+        {
+            "amount": 30.0,
+            "category": "Food",
+            "description": "Restaurant dinner",
+            "date": "2026-07-02",
+        },
     ]
 
 
 # --- filter_by_category ---
+
 
 def test_filter_by_category_matches(sample_expenses):
     result = filter_by_category(sample_expenses, "Food")
@@ -36,6 +52,7 @@ def test_filter_by_category_is_case_sensitive(sample_expenses):
 
 # --- filter_by_date ---
 
+
 def test_filter_by_date_matches(sample_expenses):
     result = filter_by_date(sample_expenses, "2026-07-02")
     assert len(result) == 2
@@ -46,6 +63,7 @@ def test_filter_by_date_no_match(sample_expenses):
 
 
 # --- filter_by_description ---
+
 
 def test_filter_by_description_substring_match(sample_expenses):
     result = filter_by_description(sample_expenses, "dinner")
@@ -58,6 +76,7 @@ def test_filter_by_description_no_match(sample_expenses):
 
 
 # --- parse_date ---
+
 
 def test_parse_date_valid_format():
     date, error = parse_date("2026-07-14")

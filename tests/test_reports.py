@@ -13,14 +13,39 @@ from reports import (
 @pytest.fixture
 def sample_expenses():
     return [
-        {"id": 1, "amount": 100.0, "category": "Food", "description": "Lunch", "date": "2026-07-01"},
-        {"id": 2, "amount": 50.0, "category": "Transport", "description": "Bus", "date": "2026-07-02"},
-        {"id": 3, "amount": 200.0, "category": "Food", "description": "Dinner", "date": "2026-07-03"},
-        {"id": 4, "amount": 50.0, "category": "Transport", "description": "Taxi", "date": "2026-07-04"},
+        {
+            "id": 1,
+            "amount": 100.0,
+            "category": "Food",
+            "description": "Lunch",
+            "date": "2026-07-01",
+        },
+        {
+            "id": 2,
+            "amount": 50.0,
+            "category": "Transport",
+            "description": "Bus",
+            "date": "2026-07-02",
+        },
+        {
+            "id": 3,
+            "amount": 200.0,
+            "category": "Food",
+            "description": "Dinner",
+            "date": "2026-07-03",
+        },
+        {
+            "id": 4,
+            "amount": 50.0,
+            "category": "Transport",
+            "description": "Taxi",
+            "date": "2026-07-04",
+        },
     ]
 
 
 # --- get_category_totals ---
+
 
 def test_get_category_totals_sums_by_category(sample_expenses):
     totals = get_category_totals(sample_expenses)
@@ -40,6 +65,7 @@ def test_get_category_totals_returns_alphabetically_sorted_keys():
 
 
 # --- get_extreme_expenses ---
+
 
 def test_get_extreme_expenses_highest(sample_expenses):
     result = get_extreme_expenses(sample_expenses, mode="highest")
@@ -74,6 +100,7 @@ def test_get_extreme_expenses_empty_list_returns_empty():
 
 # --- get_total_spent ---
 
+
 def test_get_total_spent(sample_expenses):
     assert get_total_spent(sample_expenses) == 400.0
 
@@ -83,6 +110,7 @@ def test_get_total_spent_empty_list():
 
 
 # --- get_average_expense ---
+
 
 def test_get_average_expense(sample_expenses):
     assert get_average_expense(sample_expenses) == 100.0
@@ -94,6 +122,7 @@ def test_get_average_expense_empty_list_does_not_divide_by_zero():
 
 # --- get_highest_amount / get_lowest_amount ---
 
+
 def test_get_highest_amount(sample_expenses):
     assert get_highest_amount(sample_expenses) == 200.0
 
@@ -103,6 +132,7 @@ def test_get_lowest_amount(sample_expenses):
 
 
 # --- get_summary ---
+
 
 def test_get_summary(sample_expenses):
     summary = get_summary(sample_expenses)

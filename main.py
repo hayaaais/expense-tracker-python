@@ -63,7 +63,7 @@ def add_expense():
         "amount": amount,
         "category": category,
         "description": description,
-        "date": date
+        "date": date,
     }
     insert_expense(new_expense)
     print("\nExpense added successfully!\n")
@@ -112,7 +112,7 @@ def main():
 
         elif choice == "2":
             show_expenses(expenses)
-        
+
         elif choice == "3":
             delete_expense_by_id(expenses)
             expenses = load_expenses()
