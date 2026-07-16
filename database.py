@@ -62,10 +62,13 @@ def insert_expense(expense: dict) -> None:
         )
 
 
-def delete_expense(expense_id: int) -> None:
+def delete_expense(expense_id: int) -> bool:
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM expenses WHERE id=?", (expense_id,))
+        if cursor.rowcount == 0:
+            return False
+        return True
 
 
 def load_budget() -> dict[str, float]:
