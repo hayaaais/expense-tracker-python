@@ -96,6 +96,7 @@ def get_sorted_expenses(field: str, reverse: bool = False):
 
 @app.get("/filtered/category")
 def filter_expenses_by_category(category: str):
+    category = category.title()
     expenses = load_expenses()
     return filter_by_category(expenses, category)
 
@@ -106,5 +107,6 @@ def filter_expenses_by_date(date: str):
 
 @app.get("/filtered/description")
 def filter_expenses_by_description(description: str):
+    description = description.lower()
     expenses = load_expenses()
     return filter_by_description(expenses, description)
