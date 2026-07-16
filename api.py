@@ -4,6 +4,8 @@ from pydantic import BaseModel, Field
 from database import initialize_database, load_expenses, insert_expense, delete_expense, save_budget, load_budget
 from reports import get_category_totals, get_extreme_expenses, get_average_expense, get_summary
 from budget import calculate_remaining_budget, calculate_budget_percentage, calculate_budget_excess
+from sorting import sort_expenses
+from search import filter_by_category, filter_by_date, filter_by_description
 
 app = FastAPI()
 initialize_database()
@@ -75,10 +77,34 @@ def get_budget_status():
     budget_dict = load_budget()
     current_month = datetime.date.today().strftime("%Y-%m")
     monthly_budget = budget_dict.get(current_month, 0)
-
     return {
         "monthly_budget": monthly_budget,
         "remaining": calculate_remaining_budget({"monthly_budget": monthly_budget}, expenses),
         "percentage_used": calculate_budget_percentage(monthly_budget, expenses),
         "excess": calculate_budget_excess(monthly_budget, expenses),
     }
+
+
+@app.get("/expenses/sorted")
+def get_sorted_expenses(field: str, reverse: bool = False):
+    valid_fields = {"amount", "date", "category", "description"}
+    if field not in valid_fields:
+        raise HTTPException(status_code=400, detail=f"Invalid field. Valid fields are: {', '.join(valid_fields)}")
+    expenses = load_expenses()
+    return sort_expenses(expenses, field, reverse)
+
+
+@app.get("/filtered/category")
+def filter_expenses_by_category(category: str):
+    expenses = load_expenses()
+    return filter_by_category(expenses, category)
+
+@app.get("/filtered/date")
+def filter_expenses_by_date(date: str):
+    expenses = load_expenses()
+    return filter_by_date(expenses, date)
+
+@app.get("/filtered/description")
+def filter_expenses_by_description(description: str):
+    expenses = load_expenses()
+    return filter_by_description(expenses, description)
