@@ -6,14 +6,16 @@ from reports import get_category_totals, get_extreme_expenses, get_average_expen
 from budget import calculate_remaining_budget, calculate_budget_percentage, calculate_budget_excess
 from sorting import sort_expenses
 from search import filter_by_category, filter_by_date, filter_by_description
+from fastapi import status
+
 
 app = FastAPI()
 initialize_database()
 
 class ExpenseIn(BaseModel):
     amount: float = Field(gt=0)
-    category: str
-    description: str
+    category: str = Field(min_length=1) 
+    description: str = Field(min_length=1) 
     date: str | None = None 
 
 
@@ -21,7 +23,7 @@ class ExpenseIn(BaseModel):
 def get_all_expenses():
     return load_expenses()
 
-@app.post("/expenses")
+@app.post("/expenses", status_code=201)
 def create_expense(expense: ExpenseIn):
     date = expense.date or datetime.date.today().strftime("%Y-%m-%d")
 
@@ -42,7 +44,6 @@ def remove_expense(expense_id: int):
     return {"message": "Expense deleted successfully."}
 
 
-
 @app.get("/reports/categories")
 def calculate_category_totals():
     expenses = load_expenses()
@@ -51,7 +52,7 @@ def calculate_category_totals():
 @app.get("/reports/extreme")
 def calculate_extreme_expenses(mode: str = "highest"):
     expenses = load_expenses()
-    if mode != "highest" and mode != "lowest":
+    if mode not in {"highest", "lowest"}:
         raise HTTPException(status_code=400, detail="Invalid mode. Use 'highest' or 'lowest'.")
     return get_extreme_expenses(expenses, mode)
 
