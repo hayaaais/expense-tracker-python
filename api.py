@@ -6,7 +6,6 @@ from reports import get_category_totals, get_extreme_expenses, get_average_expen
 from budget import calculate_remaining_budget, calculate_budget_percentage, calculate_budget_excess
 from sorting import sort_expenses
 from search import filter_by_category, filter_by_date, filter_by_description
-from fastapi import status
 
 
 app = FastAPI()
@@ -88,7 +87,7 @@ def get_budget_status():
 
 @app.get("/expenses/sorted")
 def get_sorted_expenses(field: str, reverse: bool = False):
-    valid_fields = {"amount", "date", "category", "description"}
+    valid_fields = {"id", "amount", "date", "category", "description"}
     if field not in valid_fields:
         raise HTTPException(status_code=400, detail=f"Invalid field. Valid fields are: {', '.join(valid_fields)}")
     expenses = load_expenses()
