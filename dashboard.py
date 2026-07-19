@@ -29,34 +29,45 @@ except requests.exceptions.ConnectionError:
 
 
 
-# 2. CONTROLS SECTION
+# 2. CONTROLS SECTION (sorting and filtering)
 st.markdown("### ↕️ Sort Records")
 col_sort, col_reverse = st.columns(2)
-
 with col_sort:
     sort_field = st.selectbox("Sort by column:", options=["id", "date", "amount", "category", "description"])
 with col_reverse:
     sort_order = st.checkbox("Descending order (Highest / Newest first)")
 st.divider()
 
+def reset_filters():
+    st.session_state.search_triggered = False
+    st.session_state.filter_choice = "Category"
+    st.session_state.filter_text = ""
+
 st.markdown("### 🔍 Filter Records")
-choice = st.radio("Filter by:", ["Category", "Date", "Description"], horizontal=True)
+choice = st.radio("Filter by:", ["Category", "Date", "Description"], horizontal=True, key="filter_choice")
 
 if choice == "Category":
-    search_value = st.text_input("Filter by Category", placeholder="e.g. Food").strip()
+    search_value = st.text_input("Filter by Category", placeholder="e.g. Food", key="filter_text").strip()
 elif choice == "Date":
-    search_value = st.text_input("Filter by Date", placeholder="YYYY-MM-DD").strip()
+    search_value = st.text_input("Filter by Date", placeholder="YYYY-MM-DD", key="filter_text").strip()
 elif choice == "Description":
-    search_value = st.text_input("Filter by Description", placeholder="e.g. Lunch").strip()
+    search_value = st.text_input("Filter by Description", placeholder="e.g. Lunch", key="filter_text").strip()
 
-search_triggered = st.button("Search")
+
+if "search_triggered" not in st.session_state:
+    st.session_state.search_triggered = False
+btn_col1, btn_col2, btn_filler = st.columns([1, 1, 4]) 
+with btn_col1:
+    if st.button("Search", use_container_width=True):
+        st.session_state.search_triggered = True
+with btn_col2:
+    st.button("Reset", on_click=reset_filters, use_container_width=True)
 st.divider()
 
 
-
-# 3. DYNAMIC DATA VIEW
+# 3. DYNAMIC DATA VIEW (with deleting)
 try:
-    if search_triggered and search_value:
+    if st.session_state.search_triggered:
         if choice == "Category":
             FETCH_URL = f"{API_BASE_URL}/filtered/category"
             query_params = {"category": search_value}
@@ -74,22 +85,46 @@ try:
     
     if response.status_code == 200:
         expenses_to_show = response.json()
-
+        
         if expenses_to_show:
             st.dataframe(expenses_to_show, use_container_width=True)
+            st.divider()
+
+            st.markdown("### 🗑️ Delete an Expense")
+            delete_options = {
+                f"ID: {exp['id']}  |  ₸{exp['amount']:.2f}  -  {exp['description']}": exp['id']
+                for exp in expenses_to_show
+            }
+            
+            del_col_select, del_col_btn = st.columns([2, 1])
+            with del_col_select:
+                selected_display = st.selectbox("Select expense to remove:", options=list(delete_options.keys()), label_visibility="collapsed")
+            with del_col_btn:
+                delete_button = st.button("Remove Selected Expense", type="primary", use_container_width=True)
+
+            if delete_button:
+                target_id = delete_options[selected_display]
+                try:
+                    del_response = requests.delete(f"{API_BASE_URL}/expenses/{target_id}")
+                    if del_response.status_code == 200:
+                        st.success("Expense deleted successfully!")
+                        st.rerun()
+                    else:
+                        st.error(f"Failed to delete. Code: {del_response.status_code}")
+                except requests.exceptions.ConnectionError:
+                    st.error("Server unreachable.")
         else:
             st.info("No records found matching current criteria.")
         st.divider()
     else:
         st.error(f"API Error: Received status code {response.status_code}")
-
 except requests.exceptions.ConnectionError:
     st.error("Could not connect to the server. Please ensure the FastAPI server is running.")
 
 
 
 # 4. DATA ENTRY FORM
-st.markdown("### ➕ Add Expense")
+st.markdown("### ➕ Add an Expense")
 with st.form("form"):
     amount = st.number_input("Amount", min_value=0.01, step=10.0, value=100.0)
     category = st.text_input("Category").strip().title()
