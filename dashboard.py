@@ -10,7 +10,43 @@ API_BASE_URL = "http://127.0.0.1:8000"
 
 
 
-# 0. CHARTS & REPORTS
+# 1. METRICS SECTION
+st.markdown("### 📋 Overview")
+try:
+    metrics_response = requests.get(f"{API_BASE_URL}/budget/overview")
+    
+    if metrics_response.status_code == 200:
+        all_expenses = metrics_response.json()
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(label="Transactions", value=all_expenses["transactions"])
+            st.caption("This month")
+            st.caption("")
+        with col2:
+            st.metric(label="Total Spent", value=f"₸{all_expenses["spent"]:.2f}")
+            st.caption("This month")
+            st.caption("")
+
+        col3, col4 = st.columns(2)
+        with col3:
+            st.metric(label="Monthly budget", value=f"₸{all_expenses["monthly_budget"]:.2f}")
+            st.caption(f"{all_expenses["percentage_used"]:.1f}% budget used")
+        with col4:
+            st.metric(label="Remaining Budget", value=f"₸{all_expenses["remaining"]:.2f}")
+            st.caption("Available to spend")
+
+        percentage = (all_expenses["percentage_used"]/100)
+        st.progress(min(percentage, 1.0))
+        st.divider()
+    else:
+        st.error(f"Metrics Error: Received status code {metrics_response.status_code}")
+except requests.exceptions.ConnectionError:
+    st.error("Could not connect to the server. Metrics unavailable.")
+
+
+
+# 2. CHARTS & REPORTS
 st.markdown("### 📊 Analytics")
 left_col, right_col = st.columns([0.6, 0.4], gap="large")
 
@@ -25,10 +61,11 @@ with left_col:
             df = pd.DataFrame(list(my_dict.items()), columns=["Categories", "Expenses"])
             chart = (
                 alt.Chart(df)
-                .mark_bar()
+                .mark_arc(innerRadius=50)
                 .encode(
-                    x=alt.X("Expenses:Q", title="Expenses"), 
-                    y=alt.Y("Categories:O", title="Category"))
+                    theta=alt.Theta("Expenses:Q", title="Expenses"),
+                    color=alt.Color("Categories:N", title="Category")
+                )
                 .properties(height=300)
             )
             st.altair_chart(chart, use_container_width=True)
@@ -60,31 +97,8 @@ st.divider()
 
 
 
-# 1. METRICS SECTION
-st.markdown("### 📋 Overview")
-try:
-    metrics_response = requests.get(f"{API_BASE_URL}/expenses")
-    
-    if metrics_response.status_code == 200:
-        all_expenses = metrics_response.json()
-        total_spent = sum(item["amount"] for item in all_expenses)
 
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric(label="Total Expenses", value=len(all_expenses))
-            st.caption("Transactions recorded")
-        with col2:
-            st.metric(label="Total Spent", value=f"₸{total_spent:.2f}")
-            st.caption("Across all categories")
-        st.divider()
-    else:
-        st.error(f"Metrics Error: Received status code {metrics_response.status_code}")
-except requests.exceptions.ConnectionError:
-    st.error("Could not connect to the server. Metrics unavailable.")
-
-
-
-# 2. CONTROLS SECTION (sorting & filtering)
+# 3. TRANSACTIONS
 st.markdown("### ↕️ Sort Records")
 col_sort, col_reverse = st.columns(2)
 with col_sort:
@@ -98,6 +112,7 @@ def reset_filters():
     st.session_state.filter_choice = "Category"
     st.session_state.filter_text = ""
 
+
 st.markdown("### 🔍 Filter Records")
 choice = st.radio("Filter by:", ["Category", "Date", "Description"], horizontal=True, key="filter_choice")
 
@@ -107,7 +122,6 @@ elif choice == "Date":
     search_value = st.text_input("Filter by Date", placeholder="YYYY-MM-DD", key="filter_text").strip()
 elif choice == "Description":
     search_value = st.text_input("Filter by Description", placeholder="e.g. Lunch", key="filter_text").strip()
-
 
 if "search_triggered" not in st.session_state:
     st.session_state.search_triggered = False
@@ -120,8 +134,6 @@ with btn_col2:
 st.divider()
 
 
-
-# 3. DYNAMIC DATA VIEW (with deleting)
 try:
     if st.session_state.search_triggered:
         if choice == "Category":
@@ -214,9 +226,30 @@ if submitted:
 
 # 5. BUDGET SECTION
 st.divider()
-st.markdown("### 💰 Set a Budget")
+st.markdown("### 💰 Budget Management")
+try:
+    response = requests.get(f"{API_BASE_URL}/budget/overview")
+    
+    if metrics_response.status_code == 200:
+        budget = response.json()
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.caption("")
+            st.metric(label="Current Budget", value=f"₸{budget['monthly_budget']:.2f}")
+            st.caption("")
+        with col2:
+            st.caption("")
+            st.metric(label="Exceeded By", value=f"₸{budget["excess"]:.2f}")
+            st.caption("")
+    else:
+        st.error(f"Couldn't load budget.")
+except requests.exceptions.ConnectionError:
+    st.error("Could not connect to the server. Backend is offline.")
+
+current_month = datetime.date.today().strftime("%Y-%m")
 with st.form("form2"):
-    month = st.text_input("Month", placeholder="YYYY-MM").strip()
+    month = st.text_input("Month", value=current_month).strip()
     amount = st.number_input("Amount", min_value=0.01, step=1000.0, value=10000.0)
     submitted = st.form_submit_button("Set budget")
 
@@ -225,6 +258,7 @@ if submitted:
         st.error("Month field cannot be empty!")
     else:
         try:
+            
             datetime.datetime.strptime(month, "%Y-%m")
             try:
                 response = requests.put(f"{API_BASE_URL}/budget/{month}", json=amount)
@@ -238,33 +272,3 @@ if submitted:
         
         except ValueError:
             st.error("Invalid format! Please use YYYY-MM")
-
-try:
-    metrics_response = requests.get(f"{API_BASE_URL}/budget/status")
-    
-    if metrics_response.status_code == 200:
-        all_expenses = metrics_response.json()
-        percentage = (all_expenses["percentage_used"]/100)
-
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.caption("")
-            st.caption("")
-            st.metric(label="Monthly budget", value=f"₸{all_expenses["monthly_budget"]:.2f}")
-        with col2:
-            st.caption("")
-            st.caption("")
-            st.metric(label="Remaining", value=f"₸{all_expenses["remaining"]:.2f}")
-        with col3:
-            st.caption("")
-            st.caption("")
-            st.progress(min(percentage, 1.0), text="Percentage used")
-        with col4:
-            st.caption("")
-            st.caption("")
-            st.metric(label="Excess", value=f"₸{all_expenses["excess"]:.2f}")
-        st.divider()
-    else:
-        st.error(f"Metrics Error: Received status code {metrics_response.status_code}")
-except requests.exceptions.ConnectionError:
-    st.error("Could not connect to the server. Metrics unavailable.")

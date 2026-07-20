@@ -2,8 +2,8 @@ import datetime
 from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel, Field
 from database import initialize_database, load_expenses, insert_expense, delete_expense, save_budget, load_budget
-from reports import get_category_totals, get_extreme_expenses, get_average_expense, get_summary
-from budget import calculate_remaining_budget, calculate_budget_percentage, calculate_budget_excess
+from reports import get_category_totals, get_extreme_expenses, get_average_expense, get_summary, get_total_spent
+from budget import calculate_remaining_budget, calculate_budget_percentage, calculate_budget_excess, get_expenses_by_month
 from sorting import sort_expenses
 from search import filter_by_category, filter_by_date, filter_by_description
 
@@ -71,13 +71,16 @@ def set_budget(month: str, amount: float = Body(gt=0)):
     save_budget(month, amount)
     return {"month": month, "amount": amount}
 
-@app.get("/budget/status")
-def get_budget_status():
+@app.get("/budget/overview")
+def get_overview():
     expenses = load_expenses()
     budget_dict = load_budget()
     current_month = datetime.date.today().strftime("%Y-%m")
     monthly_budget = budget_dict.get(current_month, 0)
+    monthly_expenses = get_expenses_by_month(current_month, expenses)
     return {
+        "transactions": len(monthly_expenses),
+        "spent": get_total_spent(monthly_expenses),
         "monthly_budget": monthly_budget,
         "remaining": calculate_remaining_budget({"monthly_budget": monthly_budget}, expenses),
         "percentage_used": calculate_budget_percentage(monthly_budget, expenses),

@@ -3,14 +3,14 @@ from reports import get_total_spent
 from database import save_budget
 
 
-def get_monthly_expenses(month, expenses):
-    monthly_expenses = [exp for exp in expenses if exp["date"][:7] == month]
-    return get_total_spent(monthly_expenses)
+def get_expenses_by_month(month, expenses):
+    return [exp for exp in expenses if exp["date"][:7] == month]
 
 
 def get_current_month_total(expenses):
     current_month = datetime.date.today().strftime("%Y-%m")
-    return get_monthly_expenses(current_month, expenses)
+    monthly_expenses = get_expenses_by_month(current_month, expenses)
+    return get_total_spent(monthly_expenses)
 
 
 def calculate_remaining_budget(budget, expenses):
