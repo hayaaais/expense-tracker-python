@@ -66,7 +66,7 @@ def get_summary_report():
     return get_summary(expenses)
 
 
-@app.put("/budget/{month}")
+@app.put("/budget/{month}", status_code=200)
 def set_budget(month: str, amount: float = Body(gt=0)):
     save_budget(month, amount)
     return {"month": month, "amount": amount}

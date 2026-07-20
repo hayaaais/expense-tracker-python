@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import datetime
 
 st.title("Expense Tracker Dashboard")
 st.divider()
@@ -153,3 +154,62 @@ if submitted:
                 st.error(f"API Error: Received status code {response.status_code}")
         except requests.exceptions.ConnectionError:
             st.error("Could not reach backend server. Please ensure the FastAPI server is running.")
+
+
+
+# 5. BUDGET SECTION
+st.divider()
+st.markdown("### 💰 Set a Budget")
+with st.form("form2"):
+    month = st.text_input("Month", placeholder="YYYY-MM").strip()
+    amount = st.number_input("Amount", min_value=0.01, step=1000.0, value=10000.0)
+    submitted = st.form_submit_button("Set budget")
+
+if submitted:
+    if not month:
+        st.error("Month field cannot be empty!")
+    else:
+        try:
+            datetime.datetime.strptime(month, "%Y-%m")
+            try:
+                response = requests.put(f"{API_BASE_URL}/budget/{month}", json=amount)
+                if response.status_code == 200:
+                    st.success("Budget set successfully!")
+                    st.rerun()
+                else:
+                    st.error(f"API Error: Received status code {response.status_code}")
+            except requests.exceptions.ConnectionError:
+                st.error("Could not reach backend server. Please ensure the FastAPI server is running.")
+        
+        except ValueError:
+            st.error("Invalid format! Please use YYYY-MM")
+
+try:
+    metrics_response = requests.get(f"{API_BASE_URL}/budget/status")
+    
+    if metrics_response.status_code == 200:
+        all_expenses = metrics_response.json()
+        percentage = (all_expenses["percentage_used"]/100)
+
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.caption("")
+            st.caption("")
+            st.metric(label="Monthly budget", value=f"₸{all_expenses["monthly_budget"]:.2f}")
+        with col2:
+            st.caption("")
+            st.caption("")
+            st.metric(label="Remaining", value=f"₸{all_expenses["remaining"]:.2f}")
+        with col3:
+            st.caption("")
+            st.caption("")
+            st.progress(min(percentage, 1.0), text="Percentage used")
+        with col4:
+            st.caption("")
+            st.caption("")
+            st.metric(label="Excess", value=f"₸{all_expenses["excess"]:.2f}")
+        st.divider()
+    else:
+        st.error(f"Metrics Error: Received status code {metrics_response.status_code}")
+except requests.exceptions.ConnectionError:
+    st.error("Could not connect to the server. Metrics unavailable.")
