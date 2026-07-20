@@ -230,7 +230,7 @@ st.markdown("### 💰 Budget Management")
 try:
     response = requests.get(f"{API_BASE_URL}/budget/overview")
     
-    if metrics_response.status_code == 200:
+    if response.status_code == 200:
         budget = response.json()
 
         col1, col2 = st.columns(2)
@@ -258,17 +258,18 @@ if submitted:
         st.error("Month field cannot be empty!")
     else:
         try:
-            
             datetime.datetime.strptime(month, "%Y-%m")
+            
             try:
                 response = requests.put(f"{API_BASE_URL}/budget/{month}", json=amount)
+
                 if response.status_code == 200:
                     st.success("Budget set successfully!")
                     st.rerun()
                 else:
                     st.error(f"API Error: Received status code {response.status_code}")
+
             except requests.exceptions.ConnectionError:
                 st.error("Could not reach backend server. Please ensure the FastAPI server is running.")
-        
         except ValueError:
             st.error("Invalid format! Please use YYYY-MM")
