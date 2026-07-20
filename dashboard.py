@@ -1,13 +1,67 @@
 import streamlit as st
 import requests
 import datetime
+import pandas as pd
+import altair as alt
 
 st.title("Expense Tracker Dashboard")
 st.divider()
 API_BASE_URL = "http://127.0.0.1:8000"
 
 
+
+# 0. CHARTS & REPORTS
+st.markdown("### 📊 Analytics")
+left_col, right_col = st.columns([0.6, 0.4], gap="large")
+
+with left_col:
+    st.markdown("##### Expense Breakdown")
+    try:
+        charts_response = requests.get(f"{API_BASE_URL}/reports/categories")
+        
+        if charts_response.status_code == 200:
+            my_dict = charts_response.json()
+
+            df = pd.DataFrame(list(my_dict.items()), columns=["Categories", "Expenses"])
+            chart = (
+                alt.Chart(df)
+                .mark_bar()
+                .encode(
+                    x=alt.X("Expenses:Q", title="Expenses"), 
+                    y=alt.Y("Categories:O", title="Category"))
+                .properties(height=300)
+            )
+            st.altair_chart(chart, use_container_width=True)
+        else:
+            st.error(f"Charts Error: Received status code {charts_response.status_code}")
+    except requests.exceptions.ConnectionError:
+        st.error("Could not connect to the server. Charts unavailable.")
+
+with right_col:
+    st.markdown("##### Summary Metrics")
+    try:
+        reports_response = requests.get(f"{API_BASE_URL}/reports/summary")
+
+        if reports_response.status_code == 200:
+            summary = reports_response.json()
+            
+            highest = f"₸{summary['highest_expense']:.2f}"
+            lowest = f"₸{summary['lowest_expense']:.2f}"
+            avg_expense = f"₸{summary['average_expense']:.2f}"
+            
+            st.metric(label="Highest Expense", value=highest)
+            st.metric(label="Lowest Expense", value=lowest)
+            st.metric(label="Average Expense", value=avg_expense)
+        else:
+            st.error(f"Summary Error: Status {reports_response.status_code}")
+    except requests.exceptions.ConnectionError:
+        st.error("Could not connect to the server for summary data.")
+st.divider()
+
+
+
 # 1. METRICS SECTION
+st.markdown("### 📋 Overview")
 try:
     metrics_response = requests.get(f"{API_BASE_URL}/expenses")
     
@@ -30,7 +84,7 @@ except requests.exceptions.ConnectionError:
 
 
 
-# 2. CONTROLS SECTION (sorting and filtering)
+# 2. CONTROLS SECTION (sorting & filtering)
 st.markdown("### ↕️ Sort Records")
 col_sort, col_reverse = st.columns(2)
 with col_sort:
@@ -64,6 +118,7 @@ with btn_col1:
 with btn_col2:
     st.button("Reset", on_click=reset_filters, use_container_width=True)
 st.divider()
+
 
 
 # 3. DYNAMIC DATA VIEW (with deleting)
