@@ -6,7 +6,7 @@ from reports import get_category_totals, get_extreme_expenses, get_average_expen
 from budget import calculate_remaining_budget, calculate_budget_percentage, calculate_budget_excess, get_expenses_by_month
 from sorting import sort_expenses
 from search import filter_by_category, filter_by_date, filter_by_description
-
+from ai import generate_ai_analysis, ask_financial_advisor
 
 app = FastAPI()
 initialize_database()
@@ -113,3 +113,18 @@ def filter_expenses_by_description(description: str):
     description = description.lower()
     expenses = load_expenses()
     return filter_by_description(expenses, description)
+
+
+@app.get("/ai/analyze")
+def get_ai_analysis():
+    expenses = load_expenses()
+    budget_status = get_overview()
+    analysis = generate_ai_analysis(expenses, budget_status)
+    return {"analysis": analysis}
+
+@app.post("/ai/ask")
+def post_ai_question(user_query: str = Body(embed=True)):
+    expenses = load_expenses()
+    budget_status = get_overview()
+    answer = ask_financial_advisor(expenses, budget_status, user_query)
+    return {"answer": answer}
