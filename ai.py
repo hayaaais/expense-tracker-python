@@ -2,7 +2,7 @@ import datetime
 from google import genai
 from google.genai import types
 
-client = genai.Client(api_key="REMOVED")
+client = genai.Client(api_key="api key")
 
 
 def build_financial_context(expenses: list, budget_status: dict) -> str:
@@ -31,7 +31,7 @@ def predict_monthly_spending(budget_status: dict) -> float:
     total_spent = budget_status.get("spent", 0.0)
     day_of_month = datetime.date.today().day
 
-    if day_of_month <= 1:
+    if day_of_month == 1:
         return total_spent * 30.0
 
     daily_pace = total_spent / day_of_month
