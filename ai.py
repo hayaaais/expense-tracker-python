@@ -1,13 +1,15 @@
+import os
 import datetime
 from google import genai
 from google.genai import types
+from dotenv import load_dotenv
 
-client = genai.Client(api_key="api key")
+load_dotenv()
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 def build_financial_context(expenses: list, budget_status: dict) -> str:
     current_month = datetime.date.today().strftime("%Y-%m")
-
     data = "\n".join([
         f"{e['date']}: ₸{e['amount']:.2f} under '{e['category']}' - ({e['description']})"
         for e in expenses])
