@@ -13,9 +13,12 @@ except Exception:
 
 def build_financial_context(expenses: list, budget_status: dict) -> str:
     current_month = datetime.date.today().strftime("%Y-%m")
-    data = "\n".join([
-        f"{e['date']}: ₸{e['amount']:.2f} under '{e['category']}' - ({e['description']})"
-        for e in expenses])
+    data = "\n".join(
+        [
+            f"{e['date']}: ₸{e['amount']:.2f} under '{e['category']}' - ({e['description']})"
+            for e in expenses
+        ]
+    )
 
     context = f"""
     Context Data for Month: {current_month}
@@ -80,10 +83,11 @@ def generate_ai_analysis(expenses: list, budget_status: dict) -> str:
         return response.text
     except Exception as e:
         raise RuntimeError(f"Gemini API call failed: {e}")
-        
 
 
-def ask_financial_advisor(expenses: list, budget_status: dict, user_question: str) -> str:
+def ask_financial_advisor(
+    expenses: list, budget_status: dict, user_question: str
+) -> str:
     context = build_financial_context(expenses, budget_status)
 
     system_instruction = f"""

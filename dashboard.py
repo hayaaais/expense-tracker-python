@@ -4,7 +4,9 @@ import datetime
 import pandas as pd
 import altair as alt
 
-st.set_page_config(page_title="Expense Tracker Dashboard", page_icon="💰", layout="wide")
+st.set_page_config(
+    page_title="Expense Tracker Dashboard", page_icon="💰", layout="wide"
+)
 
 st.title("Expense Tracker Dashboard")
 st.divider()
@@ -17,7 +19,7 @@ API_BASE_URL = "http://127.0.0.1:8000"
 st.markdown("### 📋 Overview")
 try:
     metrics_response = requests.get(f"{API_BASE_URL}/budget/overview")
-    
+
     if metrics_response.status_code == 200:
         all_expenses = metrics_response.json()
 
@@ -33,20 +35,23 @@ try:
 
         col3, col4 = st.columns(2)
         with col3:
-            st.metric(label="Monthly Budget", value=f"₸{all_expenses['monthly_budget']:.2f}")
+            st.metric(
+                label="Monthly Budget", value=f"₸{all_expenses['monthly_budget']:.2f}"
+            )
             st.caption(f"{all_expenses['percentage_used']:.1f}% of budget used.")
         with col4:
-            st.metric(label="Remaining Budget", value=f"₸{all_expenses['remaining']:.2f}")
+            st.metric(
+                label="Remaining Budget", value=f"₸{all_expenses['remaining']:.2f}"
+            )
             st.caption("Available to spend this month.")
 
-        percentage = (all_expenses["percentage_used"] / 100.0)
+        percentage = all_expenses["percentage_used"] / 100.0
         st.progress(min(percentage, 1.0))
         st.divider()
     else:
         st.error(f"Metrics Error: Received status code {metrics_response.status_code}.")
 except requests.exceptions.ConnectionError:
     st.error("Could not connect to the server. Metrics unavailable.")
-
 
 
 # ==========================================
@@ -59,18 +64,20 @@ with left_col:
     st.markdown("##### Expense Breakdown")
     try:
         charts_response = requests.get(f"{API_BASE_URL}/reports/categories")
-        
+
         if charts_response.status_code == 200:
             my_dict = charts_response.json()
 
             if my_dict:
-                df = pd.DataFrame(list(my_dict.items()), columns=["Categories", "Expenses"])
+                df = pd.DataFrame(
+                    list(my_dict.items()), columns=["Categories", "Expenses"]
+                )
                 chart = (
                     alt.Chart(df)
                     .mark_arc(innerRadius=50)
                     .encode(
                         theta=alt.Theta("Expenses:Q", title="Expenses"),
-                        color=alt.Color("Categories:N", title="Category")
+                        color=alt.Color("Categories:N", title="Category"),
                     )
                     .properties(height=300)
                 )
@@ -78,7 +85,9 @@ with left_col:
             else:
                 st.info("No categorical records found to map chart metrics.")
         else:
-            st.error(f"Charts Error: Received status code {charts_response.status_code}.")
+            st.error(
+                f"Charts Error: Received status code {charts_response.status_code}."
+            )
     except requests.exceptions.ConnectionError:
         st.error("Could not connect to the server. Charts unavailable.")
 
@@ -89,20 +98,21 @@ with right_col:
 
         if reports_response.status_code == 200:
             summary = reports_response.json()
-            
+
             highest = f"₸{summary['highest_expense']:.2f}"
             lowest = f"₸{summary['lowest_expense']:.2f}"
             avg_expense = f"₸{summary['average_expense']:.2f}"
-            
+
             st.metric(label="Highest Expense (All-Time)", value=highest)
             st.metric(label="Lowest Expense (All-Time)", value=lowest)
             st.metric(label="Average Expense (All-Time)", value=avg_expense)
         else:
-            st.error(f"Summary Error: Received status code {reports_response.status_code}.")
+            st.error(
+                f"Summary Error: Received status code {reports_response.status_code}."
+            )
     except requests.exceptions.ConnectionError:
         st.error("Could not connect to the server. Summary data unavailable.")
 st.divider()
-
 
 
 # ==========================================
@@ -115,27 +125,41 @@ def reset_filters():
     st.session_state.filter_text_date = ""
     st.session_state.filter_text_desc = ""
 
+
 left_panel, right_panel = st.columns([0.4, 0.6], gap="large")
 with left_panel:
     st.markdown("### ↕️ Sort Records")
-    sort_field = st.selectbox("Sort by column:", options=["id", "date", "amount", "category", "description"])
+    sort_field = st.selectbox(
+        "Sort by column:", options=["id", "date", "amount", "category", "description"]
+    )
     sort_order = st.checkbox("Descending order (Highest / Newest first)")
 
 with right_panel:
     st.markdown("### 🔍 Filter Records")
-    choice = st.radio("Filter by:", ["Category", "Date", "Description"], horizontal=True, key="filter_choice")
+    choice = st.radio(
+        "Filter by:",
+        ["Category", "Date", "Description"],
+        horizontal=True,
+        key="filter_choice",
+    )
 
     if choice == "Category":
-        search_value = st.text_input("Filter by Category", placeholder="e.g. Food", key="filter_text_cat").strip()
+        search_value = st.text_input(
+            "Filter by Category", placeholder="e.g. Food", key="filter_text_cat"
+        ).strip()
     elif choice == "Date":
-        search_value = st.text_input("Filter by Date", placeholder="YYYY-MM-DD", key="filter_text_date").strip()
+        search_value = st.text_input(
+            "Filter by Date", placeholder="YYYY-MM-DD", key="filter_text_date"
+        ).strip()
     elif choice == "Description":
-        search_value = st.text_input("Filter by Description", placeholder="e.g. Lunch", key="filter_text_desc").strip()
+        search_value = st.text_input(
+            "Filter by Description", placeholder="e.g. Lunch", key="filter_text_desc"
+        ).strip()
 
     if "search_triggered" not in st.session_state:
         st.session_state.search_triggered = False
 
-    btn_col1, btn_col2, btn_filler = st.columns([1, 1, 1]) 
+    btn_col1, btn_col2, btn_filler = st.columns([1, 1, 1])
     with btn_col1:
         if st.button("Search", use_container_width=True):
             st.session_state.search_triggered = True
@@ -161,31 +185,43 @@ try:
         query_params = {"field": sort_field, "reverse": sort_order}
 
     response = requests.get(FETCH_URL, params=query_params)
-    
+
     if response.status_code == 200:
         expenses_to_show = response.json()
-        expenses_to_show = sorted(expenses_to_show, key=lambda x: x[sort_field], reverse=sort_order)
-        
+        expenses_to_show = sorted(
+            expenses_to_show, key=lambda x: x[sort_field], reverse=sort_order
+        )
+
         if expenses_to_show:
             st.dataframe(expenses_to_show, use_container_width=True)
             st.divider()
 
             st.markdown("### 🗑️ Delete an Expense")
             delete_options = {
-                f"ID: {exp['id']}  |  ₸{exp['amount']:.2f}  -  {exp['description']}": exp['id']
+                f"ID: {exp['id']}  |  ₸{exp['amount']:.2f}  -  {exp['description']}": exp[
+                    "id"
+                ]
                 for exp in expenses_to_show
             }
-            
+
             del_col_select, del_col_btn = st.columns([2, 1])
             with del_col_select:
-                selected_display = st.selectbox("Select expense to remove:", options=list(delete_options.keys()), label_visibility="collapsed")
+                selected_display = st.selectbox(
+                    "Select expense to remove:",
+                    options=list(delete_options.keys()),
+                    label_visibility="collapsed",
+                )
             with del_col_btn:
-                delete_button = st.button("Remove Selected Expense", type="primary", use_container_width=True)
+                delete_button = st.button(
+                    "Remove Selected Expense", type="primary", use_container_width=True
+                )
 
             if delete_button:
                 target_id = delete_options[selected_display]
                 try:
-                    del_response = requests.delete(f"{API_BASE_URL}/expenses/{target_id}")
+                    del_response = requests.delete(
+                        f"{API_BASE_URL}/expenses/{target_id}"
+                    )
                     if del_response.status_code == 200:
                         st.success("Expense deleted successfully!")
                         st.rerun()
@@ -199,8 +235,9 @@ try:
     else:
         st.error(f"API Error: Received status code {response.status_code}.")
 except requests.exceptions.ConnectionError:
-    st.error("Could not connect to the server. Please ensure the FastAPI server is running.")
-
+    st.error(
+        "Could not connect to the server. Please ensure the FastAPI server is running."
+    )
 
 
 # ==========================================
@@ -224,7 +261,7 @@ if submitted:
             "amount": amount,
             "category": category,
             "description": description,
-            "date": date
+            "date": date,
         }
         try:
             response = requests.post(f"{API_BASE_URL}/expenses", json=expense)
@@ -234,8 +271,9 @@ if submitted:
             else:
                 st.error(f"API Error: Received status code {response.status_code}.")
         except requests.exceptions.ConnectionError:
-            st.error("Could not reach backend server. Please ensure the FastAPI server is running.")
-
+            st.error(
+                "Could not reach backend server. Please ensure the FastAPI server is running."
+            )
 
 
 # ==========================================
@@ -249,7 +287,9 @@ try:
         col1, col2 = st.columns(2)
         with col1:
             st.caption("")
-            st.metric(label="Current Budget", value=f"₸{all_expenses['monthly_budget']:.2f}")
+            st.metric(
+                label="Current Budget", value=f"₸{all_expenses['monthly_budget']:.2f}"
+            )
             st.caption("")
         with col2:
             st.caption("")
@@ -272,7 +312,7 @@ if submitted:
     else:
         try:
             datetime.datetime.strptime(month, "%Y-%m")
-            
+
             try:
                 response = requests.put(f"{API_BASE_URL}/budget/{month}", json=amount)
 
@@ -283,10 +323,11 @@ if submitted:
                     st.error(f"API Error: Received status code {response.status_code}.")
 
             except requests.exceptions.ConnectionError:
-                st.error("Could not reach backend server. Please ensure the FastAPI server is running.")
+                st.error(
+                    "Could not reach backend server. Please ensure the FastAPI server is running."
+                )
         except ValueError:
             st.error("Invalid format! Please use YYYY-MM.")
-
 
 
 # ==========================================
@@ -301,40 +342,50 @@ ai_left, ai_right = st.columns(2, gap="large")
 with ai_left:
     st.markdown("##### 📊 Automated Health Assessment")
     st.caption("Click to get an AI-generated summary of your spending.")
-    
+
     if st.button("Analyze my finances", use_container_width=True, type="secondary"):
         with st.spinner("Analyzing your spending..."):
-            
+
             try:
                 analysis_res = requests.get(f"{API_BASE_URL}/ai/analyze")
                 if analysis_res.status_code == 200:
                     st.markdown(analysis_res.json()["analysis"])
                 else:
-                    st.error(f"Analysis Error: Received status code {analysis_res.status_code}.")
+                    st.error(
+                        f"Analysis Error: Received status code {analysis_res.status_code}."
+                    )
             except requests.exceptions.ConnectionError:
-                st.error("Could not connect to the server. Please ensure the FastAPI server is running.")
+                st.error(
+                    "Could not connect to the server. Please ensure the FastAPI server is running."
+                )
 
 with ai_right:
     st.markdown("##### ✨ Ask AI")
     st.caption("Ask a specific question about your spending or budget.")
-    
+
     user_question = st.text_input(
-        "Enter your query:", 
-        placeholder="How can I save 30,000 ₸ this month?", 
-        key="ai_chat_input"
+        "Enter your query:",
+        placeholder="How can I save 30,000 ₸ this month?",
+        key="ai_chat_input",
     ).strip()
-    
+
     if st.button("Ask", use_container_width=True, type="primary"):
         if user_question:
             with st.spinner("Getting your answer..."):
 
                 try:
-                    chat_res = requests.post(f"{API_BASE_URL}/ai/ask", json={"user_query": user_question})
+                    chat_res = requests.post(
+                        f"{API_BASE_URL}/ai/ask", json={"user_query": user_question}
+                    )
                     if chat_res.status_code == 200:
                         st.info(chat_res.json()["answer"])
                     else:
-                        st.error(f"API Error: Received status code {chat_res.status_code}.")
+                        st.error(
+                            f"API Error: Received status code {chat_res.status_code}."
+                        )
                 except requests.exceptions.ConnectionError:
-                    st.error("Could not connect to the server. Please ensure the FastAPI server is running.")
+                    st.error(
+                        "Could not connect to the server. Please ensure the FastAPI server is running."
+                    )
         else:
             st.warning("Question cannot be empty.")

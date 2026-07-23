@@ -9,6 +9,7 @@ from reports import (
     get_summary,
 )
 
+
 @pytest.fixture
 def sample_expenses():
     return [
@@ -45,12 +46,15 @@ def sample_expenses():
 
 # --- get_category_totals ---
 
+
 def test_get_category_totals_sums_by_category(sample_expenses):
     totals = get_category_totals(sample_expenses)
     assert totals == {"Food": 300.0, "Transport": 100.0}
 
+
 def test_get_category_totals_empty_list():
     assert get_category_totals([]) == {}
+
 
 def test_get_category_totals_returns_alphabetically_sorted_keys():
     expenses = [
@@ -62,15 +66,18 @@ def test_get_category_totals_returns_alphabetically_sorted_keys():
 
 # --- get_extreme_expenses ---
 
+
 def test_get_extreme_expenses_highest(sample_expenses):
     result = get_extreme_expenses(sample_expenses, mode="highest")
     assert len(result) == 1
     assert result[0]["amount"] == 200.0
 
+
 def test_get_extreme_expenses_lowest(sample_expenses):
     result = get_extreme_expenses(sample_expenses, mode="lowest")
     assert len(result) == 2
     assert all(e["amount"] == 50.0 for e in result)
+
 
 def test_get_extreme_expenses_handles_ties():
     expenses = [
@@ -82,6 +89,7 @@ def test_get_extreme_expenses_handles_ties():
     assert len(result) == 2
     assert {r["category"] for r in result} == {"A", "B"}
 
+
 def test_get_extreme_expenses_empty_list_returns_empty():
     assert get_extreme_expenses([], mode="highest") == []
     assert get_extreme_expenses([], mode="lowest") == []
@@ -89,8 +97,10 @@ def test_get_extreme_expenses_empty_list_returns_empty():
 
 # --- get_total_spent ---
 
+
 def test_get_total_spent(sample_expenses):
     assert get_total_spent(sample_expenses) == 400.0
+
 
 def test_get_total_spent_empty_list():
     assert get_total_spent([]) == 0
@@ -98,8 +108,10 @@ def test_get_total_spent_empty_list():
 
 # --- get_average_expense ---
 
+
 def test_get_average_expense(sample_expenses):
     assert get_average_expense(sample_expenses) == 100.0
+
 
 def test_get_average_expense_empty_list_does_not_divide_by_zero():
     assert get_average_expense([]) == 0
@@ -107,14 +119,17 @@ def test_get_average_expense_empty_list_does_not_divide_by_zero():
 
 # --- get_highest_amount / get_lowest_amount ---
 
+
 def test_get_highest_amount(sample_expenses):
     assert get_highest_amount(sample_expenses) == 200.0
+
 
 def test_get_lowest_amount(sample_expenses):
     assert get_lowest_amount(sample_expenses) == 50.0
 
 
 # --- get_summary ---
+
 
 def test_get_summary(sample_expenses):
     summary = get_summary(sample_expenses)
