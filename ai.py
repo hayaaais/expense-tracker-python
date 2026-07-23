@@ -5,7 +5,10 @@ from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+try:
+    client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+except Exception:
+    client = None
 
 
 def build_financial_context(expenses: list, budget_status: dict) -> str:
@@ -66,15 +69,18 @@ def generate_ai_analysis(expenses: list, budget_status: dict) -> str:
     """
 
     user_prompt = f"Analyze my financial health based on this context:\n{context}\nProjected Spend Pace: ₸{projected_spend:.2f}"
-    response = client.models.generate_content(
-        model="gemini-3.5-flash-lite",
-        contents=user_prompt,
-        config=types.GenerateContentConfig(
-            system_instruction=system_instruction,
-            temperature=0.2,
-        ),
-    )
-    return response.text
+    if client is None:
+        raise RuntimeError("Gemini API key not configured")
+    try:
+        response = client.models.generate_content(
+            model="gemini-3.5-flash-lite",
+            contents=user_prompt,
+            config=types.GenerateContentConfig(system_instruction=system_instruction),
+        )
+        return response.text
+    except Exception as e:
+        raise RuntimeError(f"Gemini API call failed: {e}")
+        
 
 
 def ask_financial_advisor(expenses: list, budget_status: dict, user_question: str) -> str:
@@ -86,12 +92,14 @@ def ask_financial_advisor(expenses: list, budget_status: dict, user_question: st
     Keep your answer conversational, highly specific, and limit it to 3 sentences max. Use Tenge (₸) formatting symbols.
     """
 
-    response = client.models.generate_content(
-        model="gemini-3.5-flash-lite",
-        contents=user_question,
-        config=types.GenerateContentConfig(
-            system_instruction=system_instruction,
-            temperature=0.4,
-        ),
-    )
-    return response.text
+    if client is None:
+        raise RuntimeError("Gemini API key not configured")
+    try:
+        response = client.models.generate_content(
+            model="gemini-3.5-flash-lite",
+            contents=user_question,
+            config=types.GenerateContentConfig(system_instruction=system_instruction),
+        )
+        return response.text
+    except Exception as e:
+        raise RuntimeError(f"Gemini API call failed: {e}")

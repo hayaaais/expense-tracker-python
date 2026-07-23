@@ -84,8 +84,7 @@ def get_overview():
         "monthly_budget": monthly_budget,
         "remaining": calculate_remaining_budget({"monthly_budget": monthly_budget}, expenses),
         "percentage_used": calculate_budget_percentage(monthly_budget, expenses),
-        "excess": calculate_budget_excess(monthly_budget, expenses),
-    }
+        "excess": calculate_budget_excess(monthly_budget, expenses)}
 
 
 @app.get("/expenses/sorted")
@@ -119,12 +118,18 @@ def filter_expenses_by_description(description: str):
 def get_ai_analysis():
     expenses = load_expenses()
     budget_status = get_overview()
-    analysis = generate_ai_analysis(expenses, budget_status)
+    try:
+        analysis = generate_ai_analysis(expenses, budget_status)
+    except RuntimeError as e:
+        raise HTTPException(status_code=503, detail=str(e))
     return {"analysis": analysis}
 
 @app.post("/ai/ask")
 def post_ai_question(user_query: str = Body(embed=True)):
     expenses = load_expenses()
     budget_status = get_overview()
-    answer = ask_financial_advisor(expenses, budget_status, user_query)
+    try:
+        answer = ask_financial_advisor(expenses, budget_status, user_query)
+    except RuntimeError as e:
+        raise HTTPException(status_code=503, detail=str(e))
     return {"answer": answer}

@@ -300,23 +300,23 @@ ai_left, ai_right = st.columns(2, gap="large")
 
 with ai_left:
     st.markdown("##### 📊 Automated Health Assessment")
-    st.caption("Click to trigger Gemini deep data transaction audit scanning.")
+    st.caption("Click to get an AI-generated summary of your spending.")
     
     if st.button("Analyze my finances", use_container_width=True, type="secondary"):
-        with st.spinner("Compiling database matrices..."):
+        with st.spinner("Analyzing your spending..."):
             
             try:
                 analysis_res = requests.get(f"{API_BASE_URL}/ai/analyze")
                 if analysis_res.status_code == 200:
                     st.markdown(analysis_res.json()["analysis"])
                 else:
-                    st.error(f"Analysis Error: Status code {analysis_res.status_code}.")
+                    st.error(f"Analysis Error: Received status code {analysis_res.status_code}.")
             except requests.exceptions.ConnectionError:
-                st.error("AI service endpoint currently unreachable.")
+                st.error("Could not connect to the server. Please ensure the FastAPI server is running.")
 
 with ai_right:
     st.markdown("##### ✨ Ask AI")
-    st.caption("Ask specific advice targeting your saving constraints.")
+    st.caption("Ask a specific question about your spending or budget.")
     
     user_question = st.text_input(
         "Enter your query:", 
@@ -324,17 +324,17 @@ with ai_right:
         key="ai_chat_input"
     ).strip()
     
-    if st.button("Consult Assistant", use_container_width=True, type="primary"):
+    if st.button("Ask", use_container_width=True, type="primary"):
         if user_question:
-            with st.spinner("Consulting Gemini Core..."):
+            with st.spinner("Getting your answer..."):
 
                 try:
                     chat_res = requests.post(f"{API_BASE_URL}/ai/ask", json={"user_query": user_question})
                     if chat_res.status_code == 200:
                         st.info(chat_res.json()["answer"])
                     else:
-                        st.error(f"Chat Error: Status code {chat_res.status_code}.")
+                        st.error(f"API Error: Received status code {chat_res.status_code}.")
                 except requests.exceptions.ConnectionError:
-                    st.error("AI service routing link is offline.")
+                    st.error("Could not connect to the server. Please ensure the FastAPI server is running.")
         else:
-            st.warning("Please enter a question statement text block first.")
+            st.warning("Question cannot be empty.")
